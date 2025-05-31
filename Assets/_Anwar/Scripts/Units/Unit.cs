@@ -2,12 +2,18 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.Events;
 using AnwarMajid;
+
 public class Unit : NetworkBehaviour
 {
+    [SerializeField] private UnitType unitType;
+
+    public UnitType UnitType => unitType;
+
     [SerializeField] private UnityEvent OnSelected;
     [SerializeField] private UnityEvent OnDeSelected;
 
     [SerializeReference] private UnitMovement unitMovement;
+    [SerializeReference] private Targeter targeter;
 
     [SerializeReference] public UnitEvents OnServerUnitSpawned;
     [SerializeReference] public UnitEvents OnServerUnitDeSpawned;
@@ -15,10 +21,9 @@ public class Unit : NetworkBehaviour
     [SerializeReference] public UnitEvents OnAuthorityUnitSpawned;
     [SerializeReference] public UnitEvents OnAuthorityUnitDeSpawned;
 
-    public UnitMovement GetUnitMovement()
-    {
-        return unitMovement;
-    }
+    public UnitMovement UnitMovement => unitMovement;
+    public Targeter Targeter => targeter;
+
 
     #region Server
 
@@ -36,14 +41,11 @@ public class Unit : NetworkBehaviour
     #endregion
 
 
-
-
     #region Client
-
 
     public override void OnStartClient()
     {
-        if (!isClientOnly || !authority)
+        if (!isClientOnly || !isOwned)
             return;
 
 
@@ -53,7 +55,7 @@ public class Unit : NetworkBehaviour
 
     public override void OnStopClient()
     {
-        if (!isClientOnly || !authority)
+        if (!isClientOnly || !isOwned)
             return;
 
 
@@ -64,7 +66,7 @@ public class Unit : NetworkBehaviour
     [Client]
     public void Select()
     {
-        if (!authority)
+        if (!isOwned)
             return;
         OnSelected?.Invoke();
     }
@@ -73,10 +75,10 @@ public class Unit : NetworkBehaviour
     [Client]
     public void DeSelect()
     {
-
-        if (!authority)
+        if (!isOwned)
             return;
         OnDeSelected?.Invoke();
     }
+
     #endregion
 }

@@ -27,18 +27,12 @@ namespace AnwarMajid
 
 
         #region Client
-
-
-
-
         public void OnPointerClick(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
-
-            if (!authority)
+            if (!isOwned)
                 return;
-
             CmdSpawnUnit();
         }
 

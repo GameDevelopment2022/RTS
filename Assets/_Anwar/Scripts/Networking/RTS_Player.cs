@@ -4,7 +4,12 @@ using Mirror;
 
 public class RTS_Player : NetworkBehaviour
 {
-   [SerializeField] private List<Unit> myUnits = new List<Unit>();
+    [SerializeField] private List<Unit> myUnits = new List<Unit>();
+
+    public List<Unit> MyUnits
+    {
+        get { return myUnits; }
+    }
 
     [SerializeField] private UnitEvents OnServerUnitSpawned;
     [SerializeField] private UnitEvents OnServerUnitDeSpawned;
@@ -14,6 +19,7 @@ public class RTS_Player : NetworkBehaviour
 
 
     #region Server
+
     public override void OnStartServer()
     {
         OnServerUnitSpawned.OnEventRaised += ServerUnitSpawned;
@@ -40,11 +46,11 @@ public class RTS_Player : NetworkBehaviour
             return;
         myUnits.Remove(unit);
     }
+
     #endregion
 
 
     #region Client
-
 
     public override void OnStartClient()
     {
@@ -67,14 +73,14 @@ public class RTS_Player : NetworkBehaviour
 
     private void AuthorityUnitSpawned(Unit unit)
     {
-        if (!authority)
+        if (!isOwned)
             return;
         myUnits.Add(unit);
     }
 
     private void AuthorityUnitDeSpawned(Unit unit)
     {
-        if (!authority)
+        if (!isOwned)
             return;
         myUnits.Remove(unit);
     }

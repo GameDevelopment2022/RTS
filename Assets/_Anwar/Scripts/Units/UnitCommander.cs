@@ -1,7 +1,7 @@
 using System;
+using AnwarMajid;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class UnitCommander : MonoBehaviour
 {
@@ -26,16 +26,38 @@ public class UnitCommander : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             return;
 
+        if (hit.collider.TryGetComponent(out Targetable targetable))
+        {
+            if (targetable.isOwned)
+            {
+                TryMove(hit.point);
+                return;
+            }
+
+            TryTarget(targetable);
+            return;
+        }
+            
+        
+        
+        
         TryMove(hit.point);
 
 
     }
 
+    private void TryTarget(Targetable target)
+    {
+        foreach (var unit in selectionHandler.SelectedUnits)
+        {
+            unit.Targeter.CmdSetTarget(target.gameObject);
+        }
+    }
     private void TryMove(Vector3 point)
     {
         foreach (var unit in selectionHandler.SelectedUnits)
         {
-            unit.GetUnitMovement().CmdMove(point);
+            unit.UnitMovement.CmdMove(point);
         }
     }
 }
