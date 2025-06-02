@@ -9,43 +9,55 @@ namespace AnwarMajid
     public class UnitMovement : NetworkBehaviour
     {
         [SerializeField] private NavMeshAgent agent = null;
-        [SerializeField] private ScriptableEventVector3 MoveCommand;
+        [SerializeField] private Targeter targeter = null;
+        [SerializeField] private float chaseRange = 10f;
 
         #region Server
 
         [ServerCallback]
         private void Update()
         {
-            if (!agent.hasPath)
+            Targetable target = targeter.Targetable;
+
+
+            if (target != null)
             {
+                if ((target.transform.position - transform.position).sqrMagnitude > chaseRange * chaseRange)
+                {
+                    agent.SetDestination(target.transform.position);
+                    return;
+                }
+                else if (agent.hasPath)
+                {
+                    agent.ResetPath();
+                    return;
+                }
+
                 return;
             }
 
+
+            if (!agent.hasPath)
+                return;
 
             if (agent.remainingDistance > agent.stoppingDistance)
-            {
                 return;
-            }
 
             agent.ResetPath();
         }
 
-        [Command]
+// There is a bug that command is not being used
+        // [Command]
         public void CmdMove(Vector3 position)
         {
-            Debug.Log($"[Command] Received move command to position: {position}");
-
             if (!NavMesh.SamplePosition(position, out NavMeshHit hit, 1f, NavMesh.AllAreas))
             {
-                Debug.LogWarning("[Command] Invalid move position. Could not sample NavMesh.");
                 return;
             }
 
-            Debug.Log($"[Command] Valid position found at: {hit.position}. Setting destination.");
             agent.SetDestination(position);
-
             if (isOwned)
-                MoveCommand?.Raise(position);
+                targeter.ResetTarget();
         }
 
         #endregion

@@ -12,14 +12,14 @@ public class Unit : NetworkBehaviour
     [SerializeField] private UnityEvent OnSelected;
     [SerializeField] private UnityEvent OnDeSelected;
 
-    [SerializeReference] private UnitMovement unitMovement;
-    [SerializeReference] private Targeter targeter;
+    [SerializeField] private UnitMovement unitMovement;
+    [SerializeField] private Targeter targeter;
 
-    [SerializeReference] public UnitEvents OnServerUnitSpawned;
-    [SerializeReference] public UnitEvents OnServerUnitDeSpawned;
+    [SerializeField] public UnitEvents OnServerUnitSpawned;
+    [SerializeField] public UnitEvents OnServerUnitDeSpawned;
 
-    [SerializeReference] public UnitEvents OnAuthorityUnitSpawned;
-    [SerializeReference] public UnitEvents OnAuthorityUnitDeSpawned;
+    [SerializeField] public UnitEvents OnAuthorityUnitSpawned;
+    [SerializeField] public UnitEvents OnAuthorityUnitDeSpawned;
 
     public UnitMovement UnitMovement => unitMovement;
     public Targeter Targeter => targeter;
@@ -45,7 +45,7 @@ public class Unit : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if (!isClientOnly || !isOwned)
+        if (!isOwned)
             return;
 
 
@@ -55,7 +55,7 @@ public class Unit : NetworkBehaviour
 
     public override void OnStopClient()
     {
-        if (!isClientOnly || !isOwned)
+        if (!isOwned)
             return;
 
 

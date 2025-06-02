@@ -10,29 +10,29 @@ public class UnitSelection : MonoBehaviour
     [SerializeField] private RectTransform unitSelectionArea = null;
 
 
-    public List<Unit> SelectedUnits { get; } = new List<Unit>();
+    public List<Unit> SelectedUnits = new List<Unit>();
 
     [SerializeField] private LayerMask layerMask;
 
-    private Camera m_Camera;
-    private Vector2 startPosition;
-    private RTS_Player player;
+    private Camera _mCamera;
+    private Vector2 _startPosition;
+    private RTS_Player _player;
 
-    private float doubleClickThreshold = 0.3f;
-    private float lastClickTime = -1f;
-    private UnitType currentUnitType;
+    private readonly float _doubleClickThreshold = 0.3f;
+    private float _lastClickTime = -1f;
+    private UnitType _currentUnitType;
 
     void Start()
     {
-        m_Camera = Camera.main;
+        _mCamera = Camera.main;
     }
 
 
     private void Update()
     {
-        if (player == null)
+        if (_player == null)
         {
-            player = NetworkClient.connection.identity.GetComponent<RTS_Player>();
+            _player = NetworkClient.connection.identity.GetComponent<RTS_Player>();
         }
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
@@ -53,9 +53,9 @@ public class UnitSelection : MonoBehaviour
     private void StartSelectionArea()
     {
         
-        float timeSinceLastClick = Time.time - lastClickTime;
+        float timeSinceLastClick = Time.time - _lastClickTime;
         
-        if (timeSinceLastClick <= doubleClickThreshold)
+        if (timeSinceLastClick <= _doubleClickThreshold)
         {
             SelectAllOnScreen();
         }
@@ -69,25 +69,25 @@ public class UnitSelection : MonoBehaviour
 
             unitSelectionArea.gameObject.SetActive(true);
 
-            startPosition = Mouse.current.position.ReadValue();
+            _startPosition = Mouse.current.position.ReadValue();
 
             UpdateSelectionArea();
         }
         
-        lastClickTime = Time.time;
+        _lastClickTime = Time.time;
     }
 
     private void UpdateSelectionArea()
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
 
-        float areaWidth = mousePosition.x - startPosition.x;
-        float areaHeight = mousePosition.y - startPosition.y;
+        float areaWidth = mousePosition.x - _startPosition.x;
+        float areaHeight = mousePosition.y - _startPosition.y;
 
         Vector2 size = new Vector2(MathF.Abs(areaWidth), MathF.Abs(areaHeight));
 
         unitSelectionArea.sizeDelta = size;
-        unitSelectionArea.anchoredPosition = startPosition + new Vector2(areaWidth / 2f, areaHeight / 2f);
+        unitSelectionArea.anchoredPosition = _startPosition + new Vector2(areaWidth / 2f, areaHeight / 2f);
     }
 
     private void ClearSelectionArea()
@@ -96,7 +96,7 @@ public class UnitSelection : MonoBehaviour
 
         if (unitSelectionArea.sizeDelta.magnitude == 0f)
         {
-            Ray ray = m_Camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            Ray ray = _mCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
                 return;
@@ -108,7 +108,7 @@ public class UnitSelection : MonoBehaviour
             if (!unit.isOwned)
                 return;
 
-            currentUnitType = unit.UnitType;
+            _currentUnitType = unit.UnitType;
 
             SelectedUnits.Add(unit);
 
@@ -122,12 +122,12 @@ public class UnitSelection : MonoBehaviour
         Vector2 max = unitSelectionArea.anchoredPosition + unitSelectionArea.sizeDelta / 2;
 
 
-        foreach (var unit in player.MyUnits)
+        foreach (var unit in _player.MyUnits)
         {
             if (SelectedUnits.Contains(unit))
                 continue;
 
-            Vector2 screenPos = m_Camera.WorldToScreenPoint(unit.transform.position);
+            Vector2 screenPos = _mCamera.WorldToScreenPoint(unit.transform.position);
 
             if (screenPos.x > min.x && screenPos.x < max.x
                                     && screenPos.y > min.y && screenPos.y < max.y)
@@ -141,15 +141,15 @@ public class UnitSelection : MonoBehaviour
 
     private void SelectAllOnScreen()
     {
-        foreach (var unit in player.MyUnits)
+        foreach (var unit in _player.MyUnits)
         {
             if (SelectedUnits.Contains(unit))
                 continue;
 
-            if (unit.UnitType != currentUnitType)
+            if (unit.UnitType != _currentUnitType)
                 continue;
 
-            Vector2 screenPos = m_Camera.WorldToScreenPoint(unit.transform.position);
+            Vector2 screenPos = _mCamera.WorldToScreenPoint(unit.transform.position);
 
             if (screenPos.x >= 0 && screenPos.x <= Screen.width &&
                 screenPos.y >= 0 && screenPos.y <= Screen.height)
