@@ -11,25 +11,20 @@ public class RTS_Player : NetworkBehaviour
         get { return myUnits; }
     }
 
-    [SerializeField] private UnitEvents OnServerUnitSpawned;
-    [SerializeField] private UnitEvents OnServerUnitDeSpawned;
-
-    [SerializeField] private UnitEvents OnAuthorityUnitSpawned;
-    [SerializeField] private UnitEvents OnAuthorityUnitDeSpawned;
 
 
     #region Server
 
     public override void OnStartServer()
     {
-        OnServerUnitSpawned.OnEventRaised += ServerUnitSpawned;
-        OnServerUnitDeSpawned.OnEventRaised += ServerUnitDeSpawned;
+        Unit.OnServerUnitSpawned += ServerUnitSpawned;
+        Unit.OnServerUnitDeSpawned += ServerUnitDeSpawned;
     }
 
     public override void OnStopServer()
     {
-        OnServerUnitSpawned.OnEventRaised -= ServerUnitSpawned;
-        OnServerUnitDeSpawned.OnEventRaised -= ServerUnitDeSpawned;
+        Unit.OnServerUnitSpawned -= ServerUnitSpawned;
+        Unit.OnServerUnitDeSpawned -= ServerUnitDeSpawned;
     }
 
 
@@ -57,8 +52,8 @@ public class RTS_Player : NetworkBehaviour
         if (!isClientOnly)
             return;
 
-        OnAuthorityUnitSpawned.OnEventRaised += AuthorityUnitSpawned;
-        OnAuthorityUnitDeSpawned.OnEventRaised += AuthorityUnitDeSpawned;
+        Unit.OnAuthorityUnitSpawned += AuthorityUnitSpawned;
+        Unit.OnAuthorityUnitDeSpawned += AuthorityUnitDeSpawned;
     }
 
     public override void OnStopClient()
@@ -66,21 +61,21 @@ public class RTS_Player : NetworkBehaviour
         if (!isClientOnly)
             return;
 
-        OnAuthorityUnitSpawned.OnEventRaised -= AuthorityUnitSpawned;
-        OnAuthorityUnitDeSpawned.OnEventRaised -= AuthorityUnitDeSpawned;
+        Unit.OnAuthorityUnitSpawned -= AuthorityUnitSpawned;
+        Unit.OnAuthorityUnitDeSpawned -= AuthorityUnitDeSpawned;
     }
 
 
     private void AuthorityUnitSpawned(Unit unit)
     {
-        if (!isOwned)
+        if (!authority)
             return;
         myUnits.Add(unit);
     }
 
     private void AuthorityUnitDeSpawned(Unit unit)
     {
-        if (!isOwned)
+        if (!authority)
             return;
         myUnits.Remove(unit);
     }

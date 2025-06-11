@@ -46,8 +46,7 @@ namespace AnwarMajid
             agent.ResetPath();
         }
 
-// There is a bug that command is not being used
-        // [Command]
+         [Command]
         public void CmdMove(Vector3 position)
         {
             if (!NavMesh.SamplePosition(position, out NavMeshHit hit, 1f, NavMesh.AllAreas))

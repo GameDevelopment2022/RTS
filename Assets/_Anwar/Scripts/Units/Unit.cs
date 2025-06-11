@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Mirror;
 using UnityEngine.Events;
@@ -15,11 +16,11 @@ public class Unit : NetworkBehaviour
     [SerializeField] private UnitMovement unitMovement;
     [SerializeField] private Targeter targeter;
 
-    [SerializeField] public UnitEvents OnServerUnitSpawned;
-    [SerializeField] public UnitEvents OnServerUnitDeSpawned;
+    [SerializeField] public static event Action<Unit> OnServerUnitSpawned;
+    [SerializeField] public static event Action<Unit> OnServerUnitDeSpawned;
 
-    [SerializeField] public UnitEvents OnAuthorityUnitSpawned;
-    [SerializeField] public UnitEvents OnAuthorityUnitDeSpawned;
+    [SerializeField] public static event Action<Unit> OnAuthorityUnitSpawned;
+    [SerializeField] public static event Action<Unit> OnAuthorityUnitDeSpawned;
 
     public UnitMovement UnitMovement => unitMovement;
     public Targeter Targeter => targeter;
@@ -29,13 +30,13 @@ public class Unit : NetworkBehaviour
 
     public override void OnStartServer()
     {
-        OnServerUnitSpawned?.RaiseEvent(this);
+        OnServerUnitSpawned?.Invoke(this);
     }
 
 
     public override void OnStopServer()
     {
-        OnServerUnitDeSpawned?.RaiseEvent(this);
+        OnServerUnitDeSpawned?.Invoke(this);
     }
 
     #endregion
@@ -45,28 +46,28 @@ public class Unit : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        if (!isOwned)
+        if (!authority)
             return;
 
 
-        OnAuthorityUnitSpawned?.RaiseEvent(this);
+        OnAuthorityUnitSpawned?.Invoke(this);
     }
 
 
     public override void OnStopClient()
     {
-        if (!isOwned)
+        if (!authority)
             return;
 
 
-        OnAuthorityUnitDeSpawned?.RaiseEvent(this);
+        OnAuthorityUnitDeSpawned?.Invoke(this);
     }
 
 
     [Client]
     public void Select()
     {
-        if (!isOwned)
+        if (!authority)
             return;
         OnSelected?.Invoke();
     }
@@ -75,7 +76,7 @@ public class Unit : NetworkBehaviour
     [Client]
     public void DeSelect()
     {
-        if (!isOwned)
+        if (!authority)
             return;
         OnDeSelected?.Invoke();
     }

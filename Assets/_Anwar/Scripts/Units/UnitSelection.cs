@@ -105,7 +105,7 @@ public class UnitSelection : MonoBehaviour
                 return;
 
 
-            if (!unit.isOwned)
+            if (!unit.authority)
                 return;
 
             _currentUnitType = unit.UnitType;

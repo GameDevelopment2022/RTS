@@ -31,7 +31,7 @@ namespace AnwarMajid
         {
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
-            if (!isOwned)
+            if (!authority)
                 return;
             CmdSpawnUnit();
         }

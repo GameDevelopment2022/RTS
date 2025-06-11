@@ -11,8 +11,7 @@ namespace AnwarMajid
 
         #region Server
 
-        // There is a bug that command is not being used
-        // [Command] 
+        [Command]
         public void CmdSetTarget(GameObject target)
         {
             if (!target.TryGetComponent(out Targetable targetComp))

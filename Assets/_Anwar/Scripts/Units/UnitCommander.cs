@@ -34,7 +34,7 @@ public class UnitCommander : MonoBehaviour
         if (hit.collider.TryGetComponent(out Targetable targetable))
         {
 
-            if (targetable.isOwned)
+            if (targetable.authority)
             {
                 TryMove(hit.point);
                 return;
